@@ -106,7 +106,11 @@
 			  ,(documentation symbol 'function))
 	      doc)))
     (when (documentation symbol 'type)
-      (cond ((subtypep (find-class symbol) (find-class 'condition))
+      (cond ((null (find-class symbol nil))
+	     (push `(:type ,(symbol-name symbol)
+			   ,(documentation symbol 'type))
+		   doc))
+	    ((subtypep (find-class symbol) (find-class 'condition))
 	     (push `(:condition ,(symbol-name symbol)
 				,(documentation symbol 'type)
 				,(symbol-name-tree (mapcar #'class-name
@@ -183,7 +187,7 @@
 	     (format stream
 		     "<blockquote>Initial value: <tt>~s</tt></blockquote>~%"
 		     (fourth symboldoc))))
-	((:class :condition :structure)
+	((:class :condition :structure :type)
 	 (format stream
 		 "<p><b>~a</b>&nbsp;&nbsp;&nbsp;<i>~a</i></p>~%<blockquote>~a</blockquote>"
 		 (symbol-name-tree (second symboldoc))
